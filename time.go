@@ -80,6 +80,47 @@ func GetLocationOffsetSec(
 	return
 }
 
+func GetLocationOffsetHours(
+	location *time.Location,
+) (offsetHrs int, err error) {
+
+	const (
+		TimeFormat = "2006-01-02 15:04:05"
+	)
+
+	var sampleTimeString string
+	var timeInLocation time.Time
+	var timeInUtcTimezone time.Time
+	var timeOffset time.Duration
+
+	sampleTimeString = "2019-09-01 00:00:00"
+
+	// Time in Location.
+	timeInLocation, err = time.ParseInLocation(
+		TimeFormat,
+		sampleTimeString,
+		location,
+	)
+	if err != nil {
+		return
+	}
+
+	// Time in UTC Time Zone.
+	timeInUtcTimezone, err = time.Parse(
+		TimeFormat,
+		sampleTimeString,
+	)
+	if err != nil {
+		return
+	}
+
+	// Delta.
+	timeOffset = timeInUtcTimezone.Sub(timeInLocation)
+	offsetHrs = int(timeOffset.Hours())
+
+	return
+}
+
 func HoursToMicroseconds(
 	hours float64,
 ) time.Duration {

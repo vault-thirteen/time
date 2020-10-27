@@ -432,15 +432,11 @@ func Test_ToPreviousMonthStart(t *testing.T) {
 	aTest.MustBeEqual(t1Processed, t2)
 }
 
-// This Function has been created due to the Dumbness of the Developers of the
-// Go Language.
-//
-// Attention!
-//
-// The Results of this Tests may change in the later Versions of the Go
-// Programming Language. This Test has been confirmed to work for the Go
-// Language Version '1.12.7 linux/amd64'. The Author of this Test does not
-// guarantee the Correctness of this Test in Go Language of other Versions.
+// Attention! This Function has been created due to the Dumbness of the
+// Developers of the Go Language. The Results of this Tests may change in the
+// later Versions of the Go Programming Language. This Test has been confirmed
+// to work for the Go Language Version '1.15.3'. The Author of this Test does
+// not guarantee the Correctness of this Test in Go Language of other Versions.
 func Test_GetLocationOffsetSec(t *testing.T) {
 
 	var err error
@@ -473,15 +469,57 @@ func Test_GetLocationOffsetSec(t *testing.T) {
 	tst.MustBeEqual(locationOffsetSec, locationOffsetSecExpected)
 }
 
-// This Function has been created due to the Dumbness of the Developers of the
-// Go Language.
-//
-// Attention!
-//
-// The Results of this Tests may change in the later Versions of the Go
-// Programming Language. This Test has been confirmed to work for the Go
-// Language Version '1.12.7 linux/amd64'. The Author of this Test does not
-// guarantee the Correctness of this Test in Go Language of other Versions.
+// Attention! This Function has been created due to the Dumbness of the
+// Developers of the Go Language. The Results of this Tests may change in the
+// later Versions of the Go Programming Language. This Test has been confirmed
+// to work for the Go Language Version '1.15.3'. The Author of this Test does
+// not guarantee the Correctness of this Test in Go Language of other Versions.
+func Test_GetLocationOffsetHours(t *testing.T) {
+
+	var err error
+	var location *time.Location
+	var locationOffsetHrs int
+	var locationOffsetHrsExpected int
+	var tst *tester.Test
+
+	tst = tester.New(t)
+
+	// Test #1. Positive Time Zone Offset.
+	locationOffsetHrsExpected = 5 // 5 Earth-Planet Hours.
+	location = time.FixedZone(
+		"Somewhere on Earth [EAST]",
+		locationOffsetHrsExpected*SecondsPerHour,
+	)
+	locationOffsetHrs, err = GetLocationOffsetHours(location)
+	tst.MustBeNoError(err)
+	tst.MustBeEqual(locationOffsetHrs, locationOffsetHrsExpected)
+
+	// Test #2. Negative Time Zone Offset.
+	locationOffsetHrsExpected = -4 // 4 Earth-Planet Hours.
+	location = time.FixedZone(
+		"Somewhere on Earth [WEST]",
+		locationOffsetHrsExpected*SecondsPerHour,
+	)
+	locationOffsetHrs, err = GetLocationOffsetHours(location)
+	tst.MustBeNoError(err)
+	tst.MustBeEqual(locationOffsetHrs, locationOffsetHrsExpected)
+
+	// Test #3. Zero Time Zone Offset.
+	locationOffsetHrsExpected = 0
+	location = time.FixedZone(
+		"Somewhere on Earth [Greenwich]",
+		locationOffsetHrsExpected*SecondsPerHour,
+	)
+	locationOffsetHrs, err = GetLocationOffsetHours(location)
+	tst.MustBeNoError(err)
+	tst.MustBeEqual(locationOffsetHrs, locationOffsetHrsExpected)
+}
+
+// Attention! This Function has been created due to the Dumbness of the
+// Developers of the Go Language. The Results of this Tests may change in the
+// later Versions of the Go Programming Language. This Test has been confirmed
+// to work for the Go Language Version '1.15.3'. The Author of this Test does
+// not guarantee the Correctness of this Test in Go Language of other Versions.
 func Test_ParseDayTimeStringInLocation(t *testing.T) {
 
 	var dayStartTime time.Time
