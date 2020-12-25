@@ -47,14 +47,10 @@ func GetLocationOffsetSec(
 
 	const TimeFormat = "2006-01-02 15:04:05"
 
-	var sampleTimeString string
-	var timeInLocation time.Time
-	var timeInUtcTimezone time.Time
-	var timeOffset time.Duration
-
-	sampleTimeString = "2019-09-01 00:00:00"
+	var sampleTimeString = "2019-09-01 00:00:00"
 
 	// Time in Location.
+	var timeInLocation time.Time
 	timeInLocation, err = time.ParseInLocation(
 		TimeFormat,
 		sampleTimeString,
@@ -65,6 +61,7 @@ func GetLocationOffsetSec(
 	}
 
 	// Time in UTC Time Zone.
+	var timeInUtcTimezone time.Time
 	timeInUtcTimezone, err = time.Parse(
 		TimeFormat,
 		sampleTimeString,
@@ -74,9 +71,7 @@ func GetLocationOffsetSec(
 	}
 
 	// Delta.
-	timeOffset = timeInUtcTimezone.Sub(timeInLocation)
-	offsetSec = int(timeOffset.Seconds())
-
+	offsetSec = int(timeInUtcTimezone.Sub(timeInLocation).Seconds())
 	return
 }
 
@@ -84,18 +79,12 @@ func GetLocationOffsetHours(
 	location *time.Location,
 ) (offsetHrs int, err error) {
 
-	const (
-		TimeFormat = "2006-01-02 15:04:05"
-	)
+	const TimeFormat = "2006-01-02 15:04:05"
 
-	var sampleTimeString string
-	var timeInLocation time.Time
-	var timeInUtcTimezone time.Time
-	var timeOffset time.Duration
-
-	sampleTimeString = "2019-09-01 00:00:00"
+	var sampleTimeString = "2019-09-01 00:00:00"
 
 	// Time in Location.
+	var timeInLocation time.Time
 	timeInLocation, err = time.ParseInLocation(
 		TimeFormat,
 		sampleTimeString,
@@ -106,6 +95,7 @@ func GetLocationOffsetHours(
 	}
 
 	// Time in UTC Time Zone.
+	var timeInUtcTimezone time.Time
 	timeInUtcTimezone, err = time.Parse(
 		TimeFormat,
 		sampleTimeString,
@@ -115,9 +105,7 @@ func GetLocationOffsetHours(
 	}
 
 	// Delta.
-	timeOffset = timeInUtcTimezone.Sub(timeInLocation)
-	offsetHrs = int(timeOffset.Hours())
-
+	offsetHrs = int(timeInUtcTimezone.Sub(timeInLocation).Hours())
 	return
 }
 
@@ -177,26 +165,15 @@ func NewTimeStringRFC3339(
 	second uint,
 ) string {
 
-	var result string
-
-	yearStr := fmt.Sprintf("%04d", year)
-	monthStr := fmt.Sprintf("%02d", month)
-	dayStr := fmt.Sprintf("%02d", day)
-	hourStr := fmt.Sprintf("%02d", hour)
-	minuteStr := fmt.Sprintf("%02d", minute)
-	secondStr := fmt.Sprintf("%02d", second)
-
-	result = fmt.Sprintf(
+	return fmt.Sprintf(
 		"%s-%s-%sT%s:%s:%sZ",
-		yearStr,
-		monthStr,
-		dayStr,
-		hourStr,
-		minuteStr,
-		secondStr,
+		fmt.Sprintf("%04d", year),
+		fmt.Sprintf("%02d", month),
+		fmt.Sprintf("%02d", day),
+		fmt.Sprintf("%02d", hour),
+		fmt.Sprintf("%02d", minute),
+		fmt.Sprintf("%02d", second),
 	)
-
-	return result
 }
 
 func ParseDayTimeStringInLocation(
@@ -208,9 +185,8 @@ func ParseDayTimeStringInLocation(
 	// could be understood from its Name. So, we are implementing a true
 	// 'ParseInLocation' Method here...
 
-	var locationOffsetSec int
-
 	// Get Location's Time Zone Offset.
+	var locationOffsetSec int
 	locationOffsetSec, err = GetLocationOffsetSec(location)
 	if err != nil {
 		return
@@ -224,9 +200,7 @@ func ParseDayTimeStringInLocation(
 	if err != nil {
 		return
 	}
-	dayStartTime = dayStartTime.In(location)
-	dayStartTime = dayStartTime.Add(time.Second * time.Duration(-locationOffsetSec))
-
+	dayStartTime = dayStartTime.In(location).Add(time.Second * time.Duration(-locationOffsetSec))
 	return
 }
 
@@ -242,97 +216,64 @@ func ToDayStart(
 	timeStart time.Time,
 ) time.Time {
 
-	var delta time.Duration
-	var result time.Time
-
-	delta = time.Nanosecond*time.Duration(timeStart.Nanosecond()) +
+	var delta = time.Nanosecond*time.Duration(timeStart.Nanosecond()) +
 		time.Second*time.Duration(timeStart.Second()) +
 		time.Minute*time.Duration(timeStart.Minute()) +
 		time.Hour*time.Duration(timeStart.Hour())
 
-	result = timeStart.Add(-delta)
-
-	return result
+	return timeStart.Add(-delta)
 }
 
 func ToHourStart(
 	timeStart time.Time,
 ) time.Time {
 
-	var delta time.Duration
-	var result time.Time
-
-	delta = time.Nanosecond*time.Duration(timeStart.Nanosecond()) +
+	var delta = time.Nanosecond*time.Duration(timeStart.Nanosecond()) +
 		time.Second*time.Duration(timeStart.Second()) +
 		time.Minute*time.Duration(timeStart.Minute())
 
-	result = timeStart.Add(-delta)
-
-	return result
+	return timeStart.Add(-delta)
 }
 
 func ToMinuteStart(
 	timeStart time.Time,
 ) time.Time {
 
-	var delta time.Duration
-	var result time.Time
-
-	delta = time.Nanosecond*time.Duration(timeStart.Nanosecond()) +
+	var delta = time.Nanosecond*time.Duration(timeStart.Nanosecond()) +
 		time.Second*time.Duration(timeStart.Second())
 
-	result = timeStart.Add(-delta)
-
-	return result
+	return timeStart.Add(-delta)
 }
 
 func ToMonthStart(
 	timeStart time.Time,
 ) time.Time {
 
-	var delta time.Duration
-	var result time.Time
-
-	delta = time.Nanosecond*time.Duration(timeStart.Nanosecond()) +
+	var delta = time.Nanosecond*time.Duration(timeStart.Nanosecond()) +
 		time.Second*time.Duration(timeStart.Second()) +
 		time.Minute*time.Duration(timeStart.Minute()) +
 		time.Hour*time.Duration(timeStart.Hour()) +
 		time.Duration(timeStart.Day()-1)*(time.Hour*24)
 
-	result = timeStart.Add(-delta)
-
-	return result
+	return timeStart.Add(-delta)
 }
 
 func ToNextMonthStart(
 	timeStart time.Time,
 ) time.Time {
 
-	var delta time.Duration
-	var result time.Time
+	var timeMonthStart = ToMonthStart(timeStart)
+	var timeNextMonthForSure = timeMonthStart.Add((time.Hour * 24) * 33)
 
-	timeMonthStart := ToMonthStart(timeStart)
-
-	delta = (time.Hour * 24) * 33
-	timeNextMonthForSure := timeMonthStart.Add(delta)
-
-	result = ToMonthStart(timeNextMonthForSure)
-
-	return result
+	return ToMonthStart(timeNextMonthForSure)
 }
 
-func ToPreviousMonthStart(timeStart time.Time,
+func ToPreviousMonthStart(
+	timeStart time.Time,
 ) time.Time {
 
-	var delta time.Duration
-	var result time.Time
+	var timeMonthStart = ToMonthStart(timeStart)
+	var timeNextMonthForSure = timeMonthStart.Add((time.Hour * 24) * (-1))
 
-	timeMonthStart := ToMonthStart(timeStart)
-
-	delta = (time.Hour * 24) * (-1)
-	timeNextMonthForSure := timeMonthStart.Add(delta)
-
-	result = ToMonthStart(timeNextMonthForSure)
-
-	return result
+	return ToMonthStart(timeNextMonthForSure)
 }
